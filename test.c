@@ -77,22 +77,17 @@ int movement(struct Node **head,char* direction) {
     if (strcmp(direction, "up") == 0) {
         newHeadX = x-1;
         newHeadY = y;
-        return 1;
     } else if (strcmp(direction, "down") == 0) {
         newHeadX = x+1;
         newHeadY = y;
-        return 1;
     } else if (strcmp(direction, "left") == 0) {
         newHeadX = x;
         newHeadY = y-1;
-        return 1;
     } else if (strcmp(direction, "right") == 0) {
         newHeadX = x;
         newHeadY = y+1;
-        return 1;
     } else {
         printf("Invalid direction\n");
-        return 1;
     }
     while (current != NULL && currentIndex < snakeLength) {
         getDataOfIndex(*head, currentIndex, &x, &y);
@@ -102,7 +97,13 @@ int movement(struct Node **head,char* direction) {
         }
         currentIndex++;
     }
+    if (newHeadX < 0 || newHeadX >= 8 || newHeadY < 0 || newHeadY >= 8) {
+        printf("Game over\n");
+        return 0;
+    }
+    
     *head = addNode(*head, newHeadX, newHeadY);
+    return 1;
 }
 
 int appleEaten(struct Node *head, int appleX, int appleY) {
@@ -181,7 +182,8 @@ int main() {
         }
     }
 
-    printf("congratulations you won\n");
-
+    if (snakeLength == 64){
+        printf("congratulations you won\n");
+    }
     return 0;
 }
