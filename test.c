@@ -83,6 +83,10 @@ int movement(struct Node *head,char* direction) {
         int x, y;
         getDataOfIndex(head, 0, &x, &y);
         addNode(head, x + 1, y);
+    } else {
+        printf("Invalid direction\n");
+        return 0;
+        scanf("%s", direction);
     }
 }
 
@@ -103,9 +107,10 @@ int appleMaker(struct Node *head, int* appleX, int* appleY) {
     *appleX = rand() % 8;
     *appleY = rand() % 8;
     while (current != NULL && currentIndex < snakeLength) {
-        while (appleX == x && appleY == y) {
-            appleX = rand() % 8;
-            appleY = rand() % 8;
+        getDataOfIndex(head, currentIndex, &x, &y);
+        while (*appleX == x && *appleY == y) {
+            *appleX = rand() % 8;
+            *appleY = rand() % 8;
         }
         currentIndex++;
     }
@@ -113,55 +118,48 @@ int appleMaker(struct Node *head, int* appleX, int* appleY) {
 
 int main() {
     struct Node* head = NULL;
+    int snakeX, snakeY;
+    int appleX, appleY;
+
     head = addNode(head, 0, 2);
     head = addNode(head, 0, 1);
     head = addNode(head, 0, 0);
 
-    int snakeX, snakeY;
-
     while (snakeLength < 64) {
 
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
-            board[i][j] = 0; 
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                board[i][j] = 0; 
+            }
         }
-    }
 
-int appleX, appleY;
-
-applemaker(&appleX, &appleY);
-
-    board[appleX][appleY] = 1;
-
-    struct Node* current = head;
-    for (k = 0; k < snakeLength; k++){
-        snakeX = current->snakeX;
-        snakeY = current->snakeY;
-        board[snakeX][snakeY] = 2;  // Place the snake on the board
-        current = current->next;
-    }
-
-    if (appleEaten(head, appleX, appleY)) {
-        snakeLength++;
-        applemaker(&appleX, &appleY);
+        appleMaker(head, &appleX, &appleY);
         board[appleX][appleY] = 1;
-    }
 
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
-            printf("%d ", board[i][j]);  // Use %d instead of %s
+        struct Node* current = head;
+        for (k = 0; k < snakeLength; k++){
+            snakeX = current->snakeX;
+            snakeY = current->snakeY;
+            board[snakeX][snakeY] = 2; 
+            current = current->next;
         }
-        printf("\n");
-    }
 
-    // Free the allocated memory
-    struct Node* temp;
-    while (head != NULL) {
-        temp = head;
-        head = head->next;
-        free(temp);
-    }
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                printf("%d ", board[i][j]);  // Use %d instead of %s
+            }
+            printf("\n");
+        }
 
+        printf("Enter the direction: ");
+        scanf("%s", &direction);
+        movement(&head, direction);
+
+        if (appleEaten(head, appleX, appleY)) {
+            snakeLength++;
+            appleMaker(head, &appleX, &appleY);
+            board[appleX][appleY] = 1;
+        }
     }
 
     return 0;
