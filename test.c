@@ -66,28 +66,43 @@ int setDataOfIndex(struct Node *head, int index, int x, int y) {
     current->snakeY = y;
 }
 
-int movement(struct Node *head,char* direction) {
+int movement(struct Node **head,char* direction) {
+    int x, y;
+    int newHeadX = 0;
+    int newHeadY = 0;
+    int currentIndex = 0;
+    struct Node* current = *head;
+
+    getDataOfIndex(*head, 0, &x, &y);
     if (strcmp(direction, "up") == 0) {
-        int x, y;
-        getDataOfIndex(head, 0, &x, &y);
-        addNode(head, x, y + 1);
+        newHeadX = x-1;
+        newHeadY = y;
+        return 1;
     } else if (strcmp(direction, "down") == 0) {
-        int x, y;
-        getDataOfIndex(head, 0, &x, &y);
-        addNode(head, x, y - 1);
+        newHeadX = x+1;
+        newHeadY = y;
+        return 1;
     } else if (strcmp(direction, "left") == 0) {
-        int x, y;
-        getDataOfIndex(head, 0, &x, &y);
-        addNode(head, x - 1, y);
+        newHeadX = x;
+        newHeadY = y-1;
+        return 1;
     } else if (strcmp(direction, "right") == 0) {
-        int x, y;
-        getDataOfIndex(head, 0, &x, &y);
-        addNode(head, x + 1, y);
+        newHeadX = x;
+        newHeadY = y+1;
+        return 1;
     } else {
         printf("Invalid direction\n");
-        return 0;
-        scanf("%s", direction);
+        return 1;
     }
+    while (current != NULL && currentIndex < snakeLength) {
+        getDataOfIndex(*head, currentIndex, &x, &y);
+        if (newHeadX == x && newHeadY == y) {
+            printf("Game over\n");
+            return 0;
+        }
+        currentIndex++;
+    }
+    *head = addNode(*head, newHeadX, newHeadY);
 }
 
 int appleEaten(struct Node *head, int appleX, int appleY) {
@@ -120,10 +135,13 @@ int main() {
     struct Node* head = NULL;
     int snakeX, snakeY;
     int appleX, appleY;
+    char direction[10];
 
     head = addNode(head, 0, 2);
     head = addNode(head, 0, 1);
     head = addNode(head, 0, 0);
+
+    appleMaker(head, &appleX, &appleY);
 
     while (snakeLength < 64) {
 
@@ -133,7 +151,6 @@ int main() {
             }
         }
 
-        appleMaker(head, &appleX, &appleY);
         board[appleX][appleY] = 1;
 
         struct Node* current = head;
@@ -146,14 +163,16 @@ int main() {
 
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                printf("%d ", board[i][j]);  // Use %d instead of %s
+                printf("%d ", board[i][j]);
             }
             printf("\n");
         }
 
         printf("Enter the direction: ");
-        scanf("%s", &direction);
-        movement(&head, direction);
+        scanf("%s", direction);
+        if (movement(&head, direction) == 0) {
+            break;
+        }
 
         if (appleEaten(head, appleX, appleY)) {
             snakeLength++;
@@ -161,6 +180,8 @@ int main() {
             board[appleX][appleY] = 1;
         }
     }
+
+    printf("congratulations you won\n");
 
     return 0;
 }
