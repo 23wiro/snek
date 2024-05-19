@@ -3,7 +3,9 @@
 #include <time.h>
 #include <string.h>
 
-char board[8][8];
+const int boardSizeX = 8;
+const int boardSizeY = 8;
+
 int i, j, k, m;
 char direction;
 int snakeLength = 3;
@@ -97,11 +99,11 @@ int movement(struct Node **head,char* direction) {
         }
         currentIndex++;
     }
-    if (newHeadX < 0 || newHeadX >= 8 || newHeadY < 0 || newHeadY >= 8) {
+    if (newHeadX < 0 || newHeadX >= boardSizeX || newHeadY < 0 || newHeadY >= boardSizeY) {
         printf("Game over\n");
         return 0;
     }
-    
+
     *head = addNode(*head, newHeadX, newHeadY);
     return 1;
 }
@@ -120,19 +122,21 @@ int appleMaker(struct Node *head, int* appleX, int* appleY) {
     struct Node* current = head;
     int currentIndex = 0;
     srand(time(NULL));
-    *appleX = rand() % 8;
-    *appleY = rand() % 8;
+    *appleX = rand() % boardSizeX;
+    *appleY = rand() % boardSizeY;
     while (current != NULL && currentIndex < snakeLength) {
         getDataOfIndex(head, currentIndex, &x, &y);
         while (*appleX == x && *appleY == y) {
-            *appleX = rand() % 8;
-            *appleY = rand() % 8;
+            *appleX = rand() % boardSizeX;
+            *appleY = rand() % boardSizeY;
         }
         currentIndex++;
     }
 }
 
 int main() {
+    char board[boardSizeX][boardSizeY];
+    int maxSnakeLength = boardSizeX * boardSizeY;
     struct Node* head = NULL;
     int snakeX, snakeY;
     int appleX, appleY;
@@ -144,10 +148,10 @@ int main() {
 
     appleMaker(head, &appleX, &appleY);
 
-    while (snakeLength < 64) {
+    while (snakeLength < maxSnakeLength) {
 
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
+        for (i = 0; i < boardSizeY; i++) {
+            for (j = 0; j < boardSizeX; j++) {
                 board[i][j] = 0; 
             }
         }
@@ -162,8 +166,8 @@ int main() {
             current = current->next;
         }
 
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
+        for (i = 0; i < boardSizeX; i++) {
+            for (j = 0; j < boardSizeY; j++) {
                 printf("%d ", board[i][j]);
             }
             printf("\n");
@@ -182,7 +186,7 @@ int main() {
         }
     }
 
-    if (snakeLength == 64){
+    if (snakeLength == maxSnakeLength){
         printf("congratulations you won\n");
     }
     return 0;

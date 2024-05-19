@@ -1,1 +1,2 @@
-int
+
+    int maxSnakeLength = boardSizeX * boardSizeY;
